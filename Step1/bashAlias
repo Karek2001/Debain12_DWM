@@ -1,0 +1,8 @@
+alias i='sudo apt install'
+alias u='sudo apt update && sudo apt upgrade'
+alias q='apt list --installed'
+alias r='sudo apt remove'
+alias vi='vim'
+alias ll='ls -a'
+alias firefox='firefox > /dev/null 2>&1 &M'
+
