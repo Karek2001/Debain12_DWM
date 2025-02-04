@@ -1,0 +1,30 @@
+# Get active monitor
+active_monitor=$(xrandr --listmonitors | awk '/\*/ {print $NF}')
+
+# Launch Firefox
+super + f
+    env DISPLAY=:0.0 firefox --new-window
+
+# Launch Telegram
+super + t
+    env DISPLAY=:0.0 flatpak run org.telegram.desktop
+
+# Launch Postman
+super + p
+    env DISPLAY=:0.0 ~/Programs/Postman/Postman
+
+# Launch VS Code
+super + c
+    env DISPLAY=:0.0 code
+
+# Launch Windsurf
+super + w
+    env DISPLAY=:0.0 windsurf
+
+# Launch Remmina
+super + r
+    env DISPLAY=:0.0 flatpak run org.remmina.Remmina
+
+# Launch TeamSpeak 6
+super + s
+    env DISPLAY=:0.0 ~/Programs/TeamSpeak6/TeamSpeak
