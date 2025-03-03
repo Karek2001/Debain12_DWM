@@ -1,0 +1,8 @@
+partial alphanumeric_keys
+xkb_symbols "custom_caps" {
+    name[Group1]= "Arabic (Custom Caps)";
+    // Map Caps Lock so that:
+    // - Unshifted: Arabic letter ذ (Arabic_thal)
+    // - Shifted: tilde (~, asciitilde)
+    key <CAPS> { [ Arabic_thal, asciitilde ] };
+};

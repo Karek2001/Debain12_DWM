@@ -7,7 +7,7 @@ super + f
 
 # Launch Telegram
 super + t
-    env DISPLAY=:0.0 flatpak run org.telegram.desktop
+    env DISPLAY=:0.0 ~/Programs/Telegram/Telegram
 
 # Launch Postman
 super + p
@@ -21,10 +21,38 @@ super + c
 super + w
     env DISPLAY=:0.0 windsurf
 
-# Launch Remmina
-super + r
-    env DISPLAY=:0.0 flatpak run org.remmina.Remmina
-
 # Launch TeamSpeak 6
 super + s
     env DISPLAY=:0.0 ~/Programs/TeamSpeak6/TeamSpeak
+super + b
+    env DISPLAY=:0.0 brave-browser
+ctrl + shift + s
+    maim -s | xclip -selection clipboard -t image/png
+
+# Launch Audacious
+super + m 
+	env DISPLAY=:0.0 audacious
+
+# Launch OBS STUDIO 
+super + o
+	obs
+# Launch Clion
+super + n
+    /home/rami/Programs/clion-2024.3.2/bin/clion.sh
+# Launch Both RDPs
+super + r
+	/home/rami/ScriptsForOS/open_rdp.sh
+# Launch WebStorm
+super + W
+	/home/rami/Programs/WebStorm-243.23654.157/bin/webstorm.sh
+# Launch Termius
+super + T
+	env DISPLAY=:0.0 termius-app
+# Launch WireShark
+super + i
+	env DISPLAY=:0.0 wireshark
+
+# Launch Xmind
+super + x
+	env DISPLAY=:0.0 xmind
+
