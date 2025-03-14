@@ -1,0 +1,106 @@
+#!/bin/bash
+# Simple dmenu todo management tool
+
+TODO_FILE="$HOME/todo.txt"
+TODO_SCRIPT="$HOME/todo"
+
+# Create todo.txt if it doesn't exist
+if [ ! -f "$TODO_FILE" ]; then
+    touch "$TODO_FILE"
+fi
+
+# Ensure todo script exists and is executable
+if [ ! -x "$TODO_SCRIPT" ]; then
+    echo "Error: Todo script not found or not executable at $TODO_SCRIPT"
+    exit 1
+fi
+
+# Main menu options
+show_menu() {
+    echo -e "add\nlist\nmark done\nremove\nclear" | dmenu -i -l 5 -p "Todo:"
+}
+
+# Display todos with line numbers
+list_todos() {
+    if [ -s "$TODO_FILE" ]; then
+        cat -n "$TODO_FILE" | dmenu -i -l 10 -p "Tasks:"
+    else
+        echo "No tasks yet." | dmenu -i -l 1 -p "Tasks:"
+    fi
+}
+
+# Add a new todo
+add_todo() {
+    TASK=$(echo "" | dmenu -p "New Task:")
+    if [ -n "$TASK" ]; then
+        "$TODO_SCRIPT" add "$TASK"
+        notify-send "Todo Added" "$TASK"
+    fi
+}
+
+# Mark a todo as done
+mark_done() {
+    if [ -s "$TODO_FILE" ]; then
+        SELECTED=$(cat -n "$TODO_FILE" | dmenu -i -l 10 -p "Mark Done:")
+        if [ -n "$SELECTED" ]; then
+            NUM=$(echo "$SELECTED" | awk '{print $1}')
+            "$TODO_SCRIPT" done "$NUM"
+            TASK=$(echo "$SELECTED" | cut -f2-)
+            notify-send "Task Completed" "$TASK"
+        fi
+    else
+        echo "No tasks yet." | dmenu -i -l 1 -p "Mark Done:"
+    fi
+}
+
+# Remove a todo
+remove_todo() {
+    if [ -s "$TODO_FILE" ]; then
+        SELECTED=$(cat -n "$TODO_FILE" | dmenu -i -l 10 -p "Remove:")
+        if [ -n "$SELECTED" ]; then
+            NUM=$(echo "$SELECTED" | awk '{print $1}')
+            TASK=$(echo "$SELECTED" | cut -f2-)
+            "$TODO_SCRIPT" remove "$NUM"
+            notify-send "Task Removed" "$TASK"
+        fi
+    else
+        echo "No tasks yet." | dmenu -i -l 1 -p "Remove:"
+    fi
+}
+
+# Clear all todos
+clear_todos() {
+    CONFIRM=$(echo -e "yes\nno" | dmenu -i -l 2 -p "Clear all tasks?")
+    if [ "$CONFIRM" = "yes" ]; then
+        > "$TODO_FILE"
+        notify-send "Todo List" "All tasks cleared"
+    fi
+}
+
+# Main program logic
+CHOICE=$(show_menu)
+
+case "$CHOICE" in
+    "add")
+        add_todo
+        ;;
+    "list")
+        list_todos
+        ;;
+    "mark done")
+        mark_done
+        ;;
+    "remove")
+        remove_todo
+        ;;
+    "clear")
+        clear_todos
+        ;;
+esac
+
+# Refresh conky if it's running
+if pgrep -x "conky" > /dev/null; then
+    pkill -USR1 conky
+fi
+
+exit 0

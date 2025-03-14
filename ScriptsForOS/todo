@@ -1,0 +1,83 @@
+#!/bin/bash
+# Simple todo script for Conky display
+
+TODO_FILE="$HOME/todo.txt"
+
+# Create file if doesn't exist
+if [ ! -f "$TODO_FILE" ]; then
+    touch "$TODO_FILE"
+fi
+
+case "$1" in
+    "list")
+        if [ -s "$TODO_FILE" ]; then
+            cat -n "$TODO_FILE"
+        else
+            echo "No tasks yet."
+        fi
+        ;;
+    "add")
+        shift
+        if [ -n "$1" ]; then
+            echo "* $*" >> "$TODO_FILE"
+            echo "Added: $*"
+        else
+            echo "Usage: $(basename $0) add \"task description\""
+        fi
+        ;;
+    "done")
+        if [ -n "$2" ] && [[ "$2" =~ ^[0-9]+$ ]]; then
+            LINE_NUM=$2
+            LINE_COUNT=$(wc -l < "$TODO_FILE")
+            
+            if [ "$LINE_NUM" -gt 0 ] && [ "$LINE_NUM" -le "$LINE_COUNT" ]; then
+                LINE=$(sed -n "${LINE_NUM}p" "$TODO_FILE")
+                sed -i "${LINE_NUM}s/^\* /\* [DONE] /" "$TODO_FILE"
+                echo "Marked as done: $LINE"
+            else
+                echo "Invalid line number. Use numbers 1-$LINE_COUNT."
+            fi
+        else
+            echo "Usage: $(basename $0) done <number>"
+        fi
+        ;;
+    "remove")
+        if [ -n "$2" ] && [[ "$2" =~ ^[0-9]+$ ]]; then
+            LINE_NUM=$2
+            LINE_COUNT=$(wc -l < "$TODO_FILE")
+            
+            if [ "$LINE_NUM" -gt 0 ] && [ "$LINE_NUM" -le "$LINE_COUNT" ]; then
+                LINE=$(sed -n "${LINE_NUM}p" "$TODO_FILE")
+                sed -i "${LINE_NUM}d" "$TODO_FILE"
+                echo "Removed: $LINE"
+            else
+                echo "Invalid line number. Use numbers 1-$LINE_COUNT."
+            fi
+        else
+            echo "Usage: $(basename $0) remove <number>"
+        fi
+        ;;
+    "clear")
+        read -p "Clear all tasks? [y/N] " CONFIRM
+        if [[ "$CONFIRM" =~ ^[Yy]$ ]]; then
+            > "$TODO_FILE"
+            echo "All tasks cleared."
+        else
+            echo "Operation cancelled."
+        fi
+        ;;
+    *)
+        echo "Todo List Manager"
+        echo "----------------"
+        echo "Usage: $(basename $0) command [options]"
+        echo ""
+        echo "Commands:"
+        echo "  list                List all tasks"
+        echo "  add \"task\"          Add a new task"
+        echo "  done <number>       Mark task as done"
+        echo "  remove <number>     Remove a task"
+        echo "  clear               Clear all tasks"
+        ;;
+esac
+
+exit 0

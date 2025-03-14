@@ -127,5 +127,7 @@ xss-lock \
 zathura \
 zip \
 zoxide \
-
+remmina \ 
+remmina-plugin-rdp \
+remmina-plugin-vnc \
 echo "Installation complete!"
