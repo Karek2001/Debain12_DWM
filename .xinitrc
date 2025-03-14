@@ -19,7 +19,6 @@ export GTK_THEME=Adwaita:dark
 # Screen setup with new handler
 ~/ScriptsForOS/ScreenLayout.sh
 # Other services
-sxhkd &
 (sleep 1 && firefox) &
 slstatus &
 blueman-applet &

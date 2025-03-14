@@ -1,0 +1,131 @@
+#!/bin/bash
+
+# Define essential services based on provided files
+# These are the ones we'll actually restore
+
+# System services that should be enabled
+SYSTEM_SERVICES_ENABLE=(
+  "anacron.service"
+  "apparmor.service"
+  "autorandr.service"
+  "blueman-mechanism.service"
+  "bluetooth.service"
+  "console-setup.service"
+  "cron.service"
+  "e2scrub_reap.service"
+  "getty@.service"
+  "keyboard-setup.service"
+  "lm-sensors.service"
+  "monitor-resume.service"
+  "networking.service"
+  "systemd-pstore.service"
+  "systemd-timesyncd.service"
+  "wpa_supplicant.service"
+)
+
+# System services that should be running
+SYSTEM_SERVICES_START=(
+  "bluetooth.service"
+  "cron.service"
+  "dbus.service"
+  "polkit.service"
+  "rtkit-daemon.service"
+  "systemd-timesyncd.service"
+  "wpa_supplicant.service"
+)
+
+# User services that should be enabled
+USER_SERVICES_ENABLE=(
+  "pipewire-pulse.service"
+  "pipewire.service"
+  "wireplumber.service"
+  "xdg-desktop-portal.service"
+)
+
+# User services that should be running
+USER_SERVICES_START=(
+  "dbus.service"
+  "pipewire-pulse.service"
+  "pipewire.service"
+  "wireplumber.service"
+  "xdg-document-portal.service"
+  "xdg-permission-store.service"
+)
+
+# Function to restore system services
+restore_system_services() {
+  echo "=== Restoring System Services ==="
+  
+  # Enable services
+  echo "Enabling system services..."
+  for service in "${SYSTEM_SERVICES_ENABLE[@]}"; do
+    echo "  Enabling: $service"
+    sudo systemctl enable "$service" 2>/dev/null
+    if [ $? -eq 0 ]; then
+      echo "    ✓ Enabled successfully"
+    else
+      echo "    ✗ Failed to enable (service may not exist on this system)"
+    fi
+  done
+  
+  # Start services
+  echo "Starting system services..."
+  for service in "${SYSTEM_SERVICES_START[@]}"; do
+    echo "  Starting: $service"
+    sudo systemctl start "$service" 2>/dev/null
+    if [ $? -eq 0 ]; then
+      echo "    ✓ Started successfully"
+    else
+      echo "    ✗ Failed to start (service may already be running or doesn't exist)"
+    fi
+  done
+}
+
+# Function to restore user services
+restore_user_services() {
+  echo "=== Restoring User Services ==="
+  
+  # Enable user services
+  echo "Enabling user services..."
+  for service in "${USER_SERVICES_ENABLE[@]}"; do
+    echo "  Enabling: $service"
+    systemctl --user enable "$service" 2>/dev/null
+    if [ $? -eq 0 ]; then
+      echo "    ✓ Enabled successfully"
+    else
+      echo "    ✗ Failed to enable (service may not exist on this system)"
+    fi
+  done
+  
+  # Start user services
+  echo "Starting user services..."
+  for service in "${USER_SERVICES_START[@]}"; do
+    echo "  Starting: $service"
+    systemctl --user start "$service" 2>/dev/null
+    if [ $? -eq 0 ]; then
+      echo "    ✓ Started successfully"
+    else
+      echo "    ✗ Failed to start (service may already be running or doesn't exist)"
+    fi
+  done
+}
+
+# Main function
+main() {
+  echo "Starting systemd service restoration..."
+  echo "This script will enable and start essential system and user services."
+  
+  # Reload systemd to ensure all service files are recognized
+  echo "Reloading systemd..."
+  sudo systemctl daemon-reload
+  systemctl --user daemon-reload
+  
+  # Restore services
+  restore_system_services
+  restore_user_services
+  
+  echo "Restoration completed!"
+}
+
+# Run the main function
+main
